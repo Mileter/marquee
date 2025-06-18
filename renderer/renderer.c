@@ -633,9 +633,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
     
     if(*lpCmdLine != 0)
     {
-        if(LoadLayoutFile(g_renderer, lpCmdLine))
+        size_t lpCmdLineLen = wcslen(lpCmdLine);
+        LPWSTR trimmed = malloc((lpCmdLineLen + 1) * sizeof(wchar_t));
+        
+        int offset = 0;
+        
+        for(size_t i = 0; i < lpCmdLineLen; i++)
+        {
+        	if(lpCmdLine[i] == '"') continue;
+        	if(lpCmdLine[i] == 0) break;
+        	trimmed[offset] = lpCmdLine[i];
+        	offset++;
+        }
+        trimmed[offset] = 0; // add null byte terminator
+	
+        if(LoadLayoutFile(g_renderer, trimmed))
             StartMarquee(g_renderer);
         else MessageBoxW(hwnd, lpCmdLine, L"Could not open Marquee Layout!", MB_OK | MB_ICONERROR);
+	free(trimmed);
     }
     
     MSG msg;

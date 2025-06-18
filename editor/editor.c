@@ -902,9 +902,29 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         return 0;
     }
     
-    /* Load file if in lpCmdLine */
-    if(wcslen(lpCmdLine) > 0) LoadFile_impl(lpCmdLine);
-    
+	/* Load file if in lpCmdLine */
+	size_t lpCmdLineLen = wcslen(lpCmdLine);
+	if(lpCmdLineLen > 0)
+	{
+		LPWSTR trimmed = malloc((lpCmdLineLen + 1) * sizeof(wchar_t));
+		
+		int offset = 0;
+		
+		for(size_t i = 0; i < lpCmdLineLen; i++)
+		{
+			if(lpCmdLine[i] == '"') continue;
+			if(lpCmdLine[i] == 0) break;
+			trimmed[offset] = lpCmdLine[i];
+			offset++;
+		}
+		trimmed[offset] = 0; // add null byte terminator
+		
+		LoadFile_impl(trimmed);
+		
+		free(trimmed);
+		trimmed = 0;
+	}
+	
     /* Load accelerator table from resources */
     HACCEL hAccel = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(IDR_ACCELERATOR));
     
