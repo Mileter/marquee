@@ -521,20 +521,9 @@ void NewFile() {
     UpdateGutterAndRect();
 }
 
-void LoadFile() {
-    OPENFILENAMEW ofn;
-    wchar_t filename[MAX_PATH] = {0};
-    
-    memset(&ofn, 0, sizeof(ofn));
-    ofn.lStructSize = sizeof(ofn);
-    ofn.hwndOwner = g_editor->hwndMain;
-    ofn.lpstrFile = filename;
-    ofn.nMaxFile = MAX_PATH;
-    ofn.lpstrFilter = L"Marquee Layout Files\0*.mly\0Text Files\0*.txt\0All Files\0*.*\0";
-    ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
-    
-    if (GetOpenFileNameW(&ofn)) {
-        FILE* file = _wfopen(filename, L"rb");
+void LoadFile_impl(wchar_t * filename)
+{
+	FILE* file = _wfopen(filename, L"rb");
         if (file) {
             fseek(file, 0, SEEK_END);
             long size = ftell(file);
@@ -601,6 +590,22 @@ void LoadFile() {
         } else {
             MessageBoxW(g_editor->hwndMain, L"Could not open file", L"Error", MB_OK | MB_ICONERROR);
         }
+}
+
+void LoadFile() {
+    OPENFILENAMEW ofn;
+    wchar_t filename[MAX_PATH] = {0};
+    
+    memset(&ofn, 0, sizeof(ofn));
+    ofn.lStructSize = sizeof(ofn);
+    ofn.hwndOwner = g_editor->hwndMain;
+    ofn.lpstrFile = filename;
+    ofn.nMaxFile = MAX_PATH;
+    ofn.lpstrFilter = L"Marquee Layout Files\0*.mly\0Text Files\0*.txt\0All Files\0*.*\0";
+    ofn.Flags = OFN_FILEMUSTEXIST | OFN_PATHMUSTEXIST;
+    
+    if (GetOpenFileNameW(&ofn)) {
+        LoadFile_impl(filename);
     }
 }
 
@@ -896,6 +901,9 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPWSTR lpCmdLi
         free(g_editor);
         return 0;
     }
+    
+    /* Load file if in lpCmdLine */
+    if(wcslen(lpCmdLine) > 0) LoadFile_impl(lpCmdLine);
     
     /* Load accelerator table from resources */
     HACCEL hAccel = LoadAcceleratorsW(hInstance, MAKEINTRESOURCEW(IDR_ACCELERATOR));
