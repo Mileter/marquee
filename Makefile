@@ -17,6 +17,11 @@ USEICONS ?= Y
 CONVERT = magick
 ICON_BG_COLOR = "\#00FF40"
 
+# GNU Indent
+INDENT = indent
+# DO NOT CHANGE: Allman style
+INDENT_FLAGS = awk '{sub(/[[:space:]]*\#.*/, "")} NF && $$1 !~ /^\#/ {printf "%s ", $$0} END {print ""}' linux1.cfg
+
 ALL_TARGETS := editor.exe renderer.exe validate.exe
 ifeq ($(filter Y y,$(USEICONS)),Y)
   ALL_TARGETS := makeicons $(ALL_TARGETS)
@@ -121,4 +126,29 @@ install:
 	cp -f mly/standard.mly build/reference.mly
 	cp -f LICENSE build/license
 
-.PHONY: all clean install test standard.mly
+####### Format target #######
+
+ALL_FILES := $(shell find . -name "*.c" -o -name "*.cpp" -o -name "*.cc" -o -name "*.cxx" -o -name "*.C" -o -name "*.h" -o -name "*.hpp" -o -name "*.hh" -o -name "*.hxx" -o -name "*.H")
+
+format:
+	@export flags=$$($(INDENT_FLAGS));\
+	for file in $(ALL_FILES); do \
+		echo "Formatting $$file"; \
+		$(INDENT) "$$flags" "$$file"; \
+	done
+
+rmbackups:
+	find . -name "*.c~" -delete
+	find . -name "*.cpp~" -delete
+	find . -name "*.cc~" -delete
+	find . -name "*.cxx~" -delete
+	find . -name "*.C~" -delete
+	find . -name "*.h~" -delete
+	find . -name "*.hpp~" -delete
+	find . -name "*.hh~" -delete
+	find . -name "*.hxx~" -delete
+	find . -name "*.H~" -delete
+
+####### End format target #######
+
+.PHONY: all clean install test standard.mly format rmbackups

@@ -13,7 +13,7 @@ Suite subprograms:
 make all
 ```
 
-The makefile assumes that you are using the MinGW-w64 toolchain. If you are using MSVC or something else, feel free to patch the makefile using snot and glue to make it work.
+The makefile assumes that you are using the MinGW-w64 toolchain on MSYS2. If you are using MSVC or something else, feel free to patch the makefile using snot and glue to make it work.
 
 # Documentation
 
