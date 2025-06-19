@@ -110,8 +110,8 @@ endif
 #	$(CXX) -o test_layout.exe test/test_layout.cpp -static-libgcc -static-libstdc++
 #	./test_layout.exe
 standard.mly: renderer.exe validate.exe
-	./validate.exe test/standard.mly
-	./renderer.exe test/standard.mly
+	./validate.exe mly/standard.mly
+	./renderer.exe mly/standard.mly
 
 clean:
 	rm -f *.exe *.log *.res *.o rc/*.glass.png rc/*.ico
