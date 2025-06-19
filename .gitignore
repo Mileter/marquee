@@ -1,0 +1,8 @@
+# exclude generated resources
+rc/*.ico
+rc/*.glass.png
+# exclude generated executables
+*.exe
+*.o
+# exclude format backups
+*~
